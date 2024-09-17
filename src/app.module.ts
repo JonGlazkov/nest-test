@@ -2,9 +2,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { ContactsModule } from "./http/contacts/contacts.module";
-import { GroupsModule } from "./http/groups/groups.module";
-import { UsersModule } from "./http/users/users.module";
+import { ContactsModule } from "./modules/contacts/contacts.module";
+import { GroupsModule } from "./modules/groups/groups.module";
+import { UsersModule } from "./modules/users/users.module";
 
 @Module({
   imports: [
