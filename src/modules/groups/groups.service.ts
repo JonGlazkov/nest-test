@@ -29,6 +29,14 @@ export class GroupsService {
   }
 
   async delete(id: string) {
+    // Delete os registros relacionados na tabela contacts
+    await this.prismaService.contacts.deleteMany({
+      where: {
+        groupId: id, // Certifique-se de que o campo `groupId` seja o correto
+      },
+    });
+
+    // Agora pode deletar o grupo
     return this.prismaService.groups.delete({
       where: { id },
     });
