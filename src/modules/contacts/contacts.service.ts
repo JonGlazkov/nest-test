@@ -11,6 +11,18 @@ export class ContactsService {
     return filename.split(".").pop().toLowerCase();
   }
 
+  private parseContacts(content: string, groupId: string) {
+    return content.split("\n").map((row) => {
+      const [name, phone] = row.split(",");
+      const formattedPhone = parseFloat(phone).toFixed(0).replace(/\D/g, ""); // Converte para número inteiro sem notação científica e remove caracteres não numéricos
+      return {
+        name,
+        phone: formattedPhone,
+        groupId,
+      };
+    });
+  }
+
   async create(groupId: string, data: ContactsDTO) {
     return this.prismaService.contacts.create({
       data: {
@@ -27,43 +39,25 @@ export class ContactsService {
 
   async createByFile(groupId: string, file: Express.Multer.File) {
     const fileType = this.getFileType(file.originalname);
+    let content = "";
 
     if (fileType === "xlsx") {
       const workbook = xlsx.read(file.buffer, { type: "buffer" });
       const sheetName = workbook.SheetNames[0];
-      const worksheet = xlsx.utils.sheet_to_csv(workbook.Sheets[sheetName]);
-
-      const contactsData = worksheet.split("\n").map((row) => {
-        const [name, phone] = row.split(",");
-        const formattedPhone = parseFloat(phone).toFixed(0); // Converte para número inteiro sem notação científica
-
-        return {
-          name,
-          phone: formattedPhone.replace(/\D/g, ""),
-          groupId,
-        };
-      });
-
-      await this.prismaService.contacts.createMany({
-        data: contactsData,
-      });
-
-      return { message: "Contacts created successfully" };
+      content = xlsx.utils.sheet_to_csv(workbook.Sheets[sheetName]);
+    } else {
+      content = file.buffer.toString();
     }
 
-    const contacts = file.buffer.toString().split("\n");
-    const contactsData = contacts.map((contact) => {
-      const [name, phone] = contact.split(",");
-      const formattedPhone = phone?.replace(/\D/g, "");
-      return {
-        name,
-        phone: formattedPhone,
-        groupId,
-      };
-    });
-    await this.prismaService.contacts.createMany({
-      data: contactsData,
-    });
+    const contactsData = this.parseContacts(content, groupId);
+    await this.prismaService.contacts
+      .createMany({
+        data: contactsData,
+      })
+      .catch((error) => {
+        return { message: "Error creating contacts", error };
+      });
+
     return { message: "Contacts created successfully" };
   }
 
@@ -90,7 +84,7 @@ export class ContactsService {
   }
 
   async remove(id: string) {
-    return this.prismaService.contacts.delete({
+    await this.prismaService.contacts.delete({
       where: {
         id,
       },
