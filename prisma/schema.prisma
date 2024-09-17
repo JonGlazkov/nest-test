@@ -30,7 +30,7 @@ model Groups {
   name      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Contacts  Contacts[]
+  contacts  Contacts[]
 
   @@map("groups")
 }
