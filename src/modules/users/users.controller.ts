@@ -20,7 +20,7 @@ export class UsersController {
 
   @Get()
   async findAll(
-    @Query() query: PaginationUserDTO
+    @Query() query?: PaginationUserDTO
   ): Promise<{ data: User[]; count: number }> {
     return await this.userService.findAll(query);
   }

@@ -1,15 +1,15 @@
-import * as dotenv from 'dotenv';
-import type { JestConfigWithTsJest } from 'ts-jest';
+import * as dotenv from "dotenv";
+import type { JestConfigWithTsJest } from "ts-jest";
 
 dotenv.config();
 
 const config: JestConfigWithTsJest = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  testMatch: ['**/src/**/*.test.ts'],
+  preset: "ts-jest",
+  testEnvironment: "node",
+  testMatch: ["**/test/**/*.test.ts"],
   transform: {
-    '^.+\\.ts?$': [
-      'ts-jest',
+    "^.+\\.ts?$": [
+      "ts-jest",
       {
         diagnostics: false,
       },
