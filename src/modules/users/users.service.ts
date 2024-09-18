@@ -43,7 +43,7 @@ export class UsersService {
 
   async findAll({
     email,
-    limit,
+    limit = 10,
     name,
     page = 1,
   }: PaginationUserDTO): Promise<{ data: User[]; count: number }> {
