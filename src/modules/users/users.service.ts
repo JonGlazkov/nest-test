@@ -11,10 +11,8 @@ export class UsersService {
 
   async create({
     email,
-    confirmationPassword,
-    name,
     password,
-    phone,
+    name,
   }: CreateUserDTO): Promise<Partial<User>> {
     const user = await this.prisma.user.findFirst({
       where: { email },
@@ -24,21 +22,15 @@ export class UsersService {
       throw new BadRequestException("User already exists");
     }
 
-    if (password !== confirmationPassword) {
-      throw new BadRequestException("Passwords do not match");
-    }
-
     const {
       id: createdId,
-      name: createdName,
       email: createdEmail,
-      phone: createdPhone,
+      name: createdName,
     } = await this.prisma.user.create({
       data: {
         email,
-        name,
         password,
-        phone,
+        name,
       },
     });
 
@@ -46,7 +38,6 @@ export class UsersService {
       id: createdId,
       email: createdEmail,
       name: createdName,
-      phone: createdPhone,
     };
   }
 
